@@ -1,7 +1,7 @@
 extends Node
 
 var networks = {} # network_id: { machines: [], astar: Astar2D, "color": Color }
-var machines = {} # machine: network_id
+var machines = {} # machine_id: { network_id: null, machine: null }
 var network_list = [] # network_id
 var machine_id_counter = 0 # machine_id
 
@@ -11,26 +11,41 @@ var machine_id_counter = 0 # machine_id
 # Parameters:
 #  - machine: The machine instance to be added.
 func add_machine(machine):
-	if not machines.has(machine):
+	if not machines.has(machine.id):
 		machine.id = machine_id_counter
 		machine_id_counter += 1
 		machine.connect("connections_changed", self, "_on_connections_changed")
-		machines[machine] = null
+		machines[machine.id] = {"network_id": null, "machine": machine}
 
 	var neighbors: Array = get_neighbors(machine)
 	
 	if neighbors.size() > 0:
 		for neighbor in neighbors:
-			if machines[neighbor] == null: continue
+			if machines[neighbor.id].network_id == null: continue
 			
-			if machines[machine] == null:
-				add_to_network(machine, machines[neighbor])
+			if machines[machine.id].network_id == null:
+				add_to_network(machine, machines[neighbor.id].network_id)
+				connect_points(machine, neighbor)
 				continue
 		
-			if machines[neighbor] != machines[machine]:
-				merge_networks(machines[machine], machines[neighbor])
+			if machines[neighbor.id].network_id != machines[machine.id].network_id:
+				merge_networks(machines[machine.id].network_id, machines[neighbor.id].network_id)
+				connect_points(machine, neighbor)
+				continue
+
 	else:
 		create_network(machine)
+
+
+func connect_points(point1, point2):
+	var machine_data = machines[point1.id]
+	print(machine_data)
+	var network = networks[machine_data.network_id]
+	network.astar.connect_points(point1.id, point2.id, true)
+	print("machine network", machines[point1.id].network_id)
+	print("neighbor network", machines[point2.id].network_id)	
+	for point in network.astar.get_points():
+		print(network.astar.get_point_connections(point).size())
 
 # Merges two networks identified by their IDs.
 # 
@@ -54,7 +69,7 @@ func merge_networks(network_id1, network_id2):
 	
 	for machine in network2.machines:
 		add_to_network(machine, network_id1)
-		machines[machine] = network_id1
+		machines[machine.id].network_id = network_id1
 	networks.erase(network_id2)
 
 	network_list.erase(network_id2)
@@ -63,14 +78,15 @@ func merge_networks(network_id1, network_id2):
 func get_neighbors(machine):
 	var neighbors = []
 	for _machine in machine.neighbors:
-		if machines.has(_machine): neighbors.append(_machine)
+		if machines.has(_machine.id): neighbors.append(_machine)
 	return neighbors
 
 func add_to_network(machine, network_id):
 	var network = networks[network_id]
-	machines[machine] = network_id
+	machines[machine.id].network_id = network_id
 	network.machines.append(machine)
 	network.astar.add_point(machine.id, machine.position)
+
 	update_machine_colors(network_id)
 
 func update_machine_colors(network_id):
@@ -91,7 +107,7 @@ func create_network(machine):
 	network_list.append(network_id)
 	var network = {"machines": [machine], "astar": AStar2D.new(), "color": Color(randf(), randf(), randf())}
 	networks[network_id] = network
-	machines[machine] = network_id
+	machines[machine.id].network_id = network_id
 	network.astar.add_point(machine.id, machine.position)
 	update_machine_colors(network_id)
 
