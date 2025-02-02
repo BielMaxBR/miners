@@ -31,7 +31,17 @@ func add_machine(machine, network_id = null):
 
 func merge_networks(network_id1, network_id2):
 	print("fundindo redes ", network_id1, network_id2) # depois faça cada network ter uma cor diferente
+	
+	var network1 = networks[network_id1]
 	var network2 = networks[network_id2]
+	
+	if network2.machines.size() > network1.machines.size():
+		var acc = network_id1
+		network_id1 = network_id2
+		network_id2 = acc
+		network1 = networks[network_id1]
+		network2 = networks[network_id2]
+		
 	for machine in network2.machines:
 		add_to_network(machine, network_id1)
 		machines[machine] = network_id1
