@@ -5,6 +5,11 @@ var machines = {} # machine_id: { network_id: null, machine: null }
 var network_list = [] # network_id
 var machine_id_counter = 0 # machine_id
 
+enum MachineType  {
+	CONVEYOR,
+	MINER,
+	STORAGE
+}
 
 # Adds a machine to the global state.
 # 
@@ -42,10 +47,9 @@ func connect_points(point1, point2):
 	print(machine_data)
 	var network = networks[machine_data.network_id]
 	network.astar.connect_points(point1.id, point2.id, true)
-	print("machine network", machines[point1.id].network_id)
-	print("neighbor network", machines[point2.id].network_id)	
-	for point in network.astar.get_points():
-		print(network.astar.get_point_connections(point).size())
+
+	# var path = network.astar.get_id_path(network.astar.get_points()[0], point1.id)
+	# print("Path from first point to point1: ", path)
 
 # Merges two networks identified by their IDs.
 # 

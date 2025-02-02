@@ -6,6 +6,8 @@ var neighbors = []
 var id = null
 var color = Color(1,1,1)
 
+export var type = Global.MachineType.CONVEYOR
+
 func _ready():
 	Global.add_machine(self)
 
