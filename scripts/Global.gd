@@ -109,7 +109,10 @@ func create_network(machine):
 	while network_list.has(network_id):
 		network_id += 1
 	network_list.append(network_id)
-	var network = {"machines": [machine], "astar": AStar2D.new(), "color": Color(randf(), randf(), randf())}
+	var network = {"machines": [machine], "types": {}, "astar": AStar2D.new(), "color": Color(randf(), randf(), randf())}
+	for type in MachineType.values():
+		network.types[type] = []
+	
 	networks[network_id] = network
 	machines[machine.id].network_id = network_id
 	network.astar.add_point(machine.id, machine.position)
