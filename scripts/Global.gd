@@ -40,11 +40,11 @@ func add_machine(machine):
 
 	else:
 		create_network(machine)
-	var types = networks[machines[machine.id].network_id].types
+	# var types = networks[machines[machine.id].network_id].types
 
-	for type in MachineType.values():
-		# if types[type].size() > 0:
-		print("Type: ", MachineType.keys()[type], " Size: ", types[type].size())
+	# for type in MachineType.values():
+	# 	# if types[type].size() > 0:
+	# 	print("Type: ", MachineType.keys()[type], " Size: ", types[type].size())
 
 func connect_points(point1, point2):
 	var machine_data = machines[point1.id]
