@@ -23,4 +23,4 @@ func _process(_delta):
 			inst.name = name_inst 
 
 			$Machines.add_child(inst)
-			print("criou maquina ", name_inst)
+			# print("criou maquina ", name_inst)

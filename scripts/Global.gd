@@ -40,11 +40,15 @@ func add_machine(machine):
 
 	else:
 		create_network(machine)
+	var types = networks[machines[machine.id].network_id].types
 
+	for type in MachineType.values():
+		# if types[type].size() > 0:
+		print("Type: ", MachineType.keys()[type], " Size: ", types[type].size())
 
 func connect_points(point1, point2):
 	var machine_data = machines[point1.id]
-	print(machine_data)
+	# print(machine_data)
 	var network = networks[machine_data.network_id]
 	network.astar.connect_points(point1.id, point2.id, true)
 
@@ -89,6 +93,7 @@ func add_to_network(machine, network_id):
 	var network = networks[network_id]
 	machines[machine.id].network_id = network_id
 	network.machines.append(machine)
+	network.types[machine.type].append(machine)
 	network.astar.add_point(machine.id, machine.position)
 
 	update_machine_colors(network_id)
@@ -112,7 +117,8 @@ func create_network(machine):
 	var network = {"machines": [machine], "types": {}, "astar": AStar2D.new(), "color": Color(randf(), randf(), randf())}
 	for type in MachineType.values():
 		network.types[type] = []
-	
+	network.types[machine.type].append(machine)
+
 	networks[network_id] = network
 	machines[machine.id].network_id = network_id
 	network.astar.add_point(machine.id, machine.position)
